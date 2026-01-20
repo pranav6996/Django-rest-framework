@@ -28,14 +28,27 @@ class Order(models.Model):
         CANCELLED='cancelled'
     
     order_id=models.TextField(primary_key=True,default=uuid.uuid4)
-    user=models.ForeignKey(User,on_delete=models.CASCADE)  # this will delete all the data associated with the user
+    user=models.ForeignKey(User,on_delete=models.CASCADE)  # this translated into sql as user_id column
+    # this will delete all the data associated with the user
+
     created_at=models.DateTimeField(auto_now_add=True)
     status=models.CharField(max_length=10,choices=StatusChoices.choices,default=StatusChoices.PENDING)
 
-    products=models.ManyToManyField(Product,through="OrderItem",related_item='orders')  # the first many to many fields is impplying that a product has many to many relations with other products too and the 2nd part of through ="OrderItem" is associated with how many quantity or
+    products=models.ManyToManyField(Product,through="OrderItem",related_name='orders')  # the first many to many fields is impplying that a product has many to many relations with other products too and the 2nd part of through ="OrderItem" is associated with how many quantity or
     #the number of items we are ordering for that product and the part related_item is used to make different queries to view the orders history of this specific product
-
+    # the through value is used to create our own ManytoMany relationships table
     def __str__(self):
         return f'the order of id with id  {self.order_id} ordered by {self.user.username}'
     
 
+class OrderItem(models.Model):
+    order=models.ForeignKey(Order,on_delete=models.CASCADE) # creates order_id columns in the database by taking the Order class as refrence
+    product=models.ForeignKey(Product,on_delete=models.CASCADE)
+    quantity=models.PositiveIntegerField()
+
+    @property
+    def item_subtotal(self):
+        return self.product.price * self.quantity
+
+    def __str__(self):
+        return f'{self.product.price} * {self.quantity} in the order {self.order.order_id}'
