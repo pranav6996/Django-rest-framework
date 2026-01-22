@@ -42,7 +42,7 @@ class Order(models.Model):
     
 
 class OrderItem(models.Model):
-    order=models.ForeignKey(Order,on_delete=models.CASCADE) # creates order_id columns in the database by taking the Order class as refrence
+    order=models.ForeignKey(Order,on_delete=models.CASCADE,related_name='items') # creates order_id columns in the database by taking the Order class as refrence
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     quantity=models.PositiveIntegerField()
 

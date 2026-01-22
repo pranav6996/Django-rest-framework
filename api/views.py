@@ -1,6 +1,6 @@
 from django.http import JsonResponse
-from .serializers import ProductSerializer
-from .models import Product
+from .serializers import ProductSerializer,OrderSerializer,OrderItemSerializer
+from .models import Product,Order,OrderItem
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
@@ -23,4 +23,11 @@ def product_view(request,pk):  # we use this to display it using the url
     products=get_object_or_404(Product,pk=pk)
     serializing=ProductSerializer(products)  # we used many=True because we are passing a query set which are of multiple objects
     return Response(serializing.data)
+
+@api_view(['GET'])
+def order_list(request):
+    orders=Order.objects.all()
+    serializers=OrderSerializer(orders,many=True)
+    return Response(serializers.data)
+
 
