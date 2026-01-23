@@ -19,7 +19,7 @@ class ProductSerializer(serializers.ModelSerializer):
                 "the price should be above 0!!!!"
             )
         return value
-# now we are going to write a djangi views.py function to use this class ProductSerializer
+# now we are going to write a django views.py function to use this class ProductSerializer
 
 
 
@@ -63,6 +63,10 @@ class OrderSerializer(serializers.ModelSerializer):
         
 
 
+class ProductInfoSerializer(serializers.Serializer): # we can not use a meta class because we are not using modelserializer to refrence tl a model and get that data we are just taking a serializer 
+    products=ProductSerializer(many=True)
+    count=serializers.IntegerField()
+    max_price=serializers.FloatField()
 
 
 
