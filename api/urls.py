@@ -6,7 +6,14 @@ urlpatterns = [
     path('products/<int:pk>',views.product_view),
     path('orders/',views.order_list),
     path('product/info',views.product_data),
-    
+
     
     
 ]
+
+
+
+
+
+
+# we should add that we reduced the query number and latency time by a lot using silk in django

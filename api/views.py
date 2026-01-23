@@ -27,7 +27,10 @@ def product_view(request,pk):  # we use this to display it using the url
 
 @api_view(['GET'])
 def order_list(request):
-    orders=Order.objects.all()
+    orders=Order.objects.prefetch_related(
+        #'items',         we dont need items here because doing items__product already fetches the items fully and then the product
+        'items__product'
+        )  # here items refer to get orderitem for each order and items__product does refer to orderItem by items and get its product
     serializers=OrderSerializer(orders,many=True)
     return Response(serializers.data)
   
