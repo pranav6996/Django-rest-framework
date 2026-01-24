@@ -2,9 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('products/',views.product_list),
-    path('products/<int:pk>',views.product_view),
-    path('orders/',views.order_list),
+    path('products/',views.ProductListAPIView.as_view()),
+    path('products/<int:product_id>',views.ProductDetailAPIView.as_view()), # we can overide link name to this to refer to this instead of pk key defaultly done by the generic rest_framework
+    path('orders/',views.OrderListAPIView.as_view()),
     path('product/info',views.product_data),
 
     

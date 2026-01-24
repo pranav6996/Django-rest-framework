@@ -5,34 +5,71 @@ from .models import Product,Order,OrderItem
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
+from rest_framework import generics
 
 
 
-@api_view(['GET'])  # this implies the class that this is a api view 
-def product_list(request):  # we use this to display it using the url
-    products=Product.objects.all()
-    serializing=ProductSerializer(products,many=True)  # we used many=True because we are passing a query set which are of multiple objects
-#    return JsonResponse({
-#        'data':serializing.data
-#    }) this is the old way and it is replaced by the blow line
+class ProductListAPIView(generics.ListAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializer
+
+
+
+# @api_view(['GET'])  # this implies the class that this is a api view 
+# def product_list(request):  # we use this to display it using the url
+#     products=Product.objects.all()
+#     serializing=ProductSerializer(products,many=True)  # we used many=True because we are passing a query set which are of multiple objects
+# #    return JsonResponse({
+# #        'data':serializing.data
+# #    }) this is the old way and it is replaced by the blow line
     
-    return Response(serializing.data)
+    # return Response(serializing.data)
 
 
-@api_view(['GET'])  # this implies the class that this is a api view 
-def product_view(request,pk):  # we use this to display it using the url
-    products=get_object_or_404(Product,pk=pk)
-    serializing=ProductSerializer(products)  # we used many=True because we are passing a query set which are of multiple objects
-    return Response(serializing.data)
 
-@api_view(['GET'])
-def order_list(request):
-    orders=Order.objects.prefetch_related(
-        #'items',         we dont need items here because doing items__product already fetches the items fully and then the product
-        'items__product'
-        )  # here items refer to get orderitem for each order and items__product does refer to orderItem by items and get its product
-    serializers=OrderSerializer(orders,many=True)
-    return Response(serializers.data)
+
+class ProductDetailAPIView(generics.RetrieveAPIView):
+    queryset=Product.objects.all()
+    # instead of retrieving all the data like that with all() we can choose a certain field like Product.objects.filter(stock__gt=0)  # here gt indicates greater than
+    # we cna also exclude a field like Product.objects.exclude(stock__gt=0) this only returns the products with stock 0
+    serializer_class=ProductSerializer
+    lookup_url_kwarg='product_id'  # we overrided the primary key to this manually because it automatically used primary key to search so we changed it to check the things
+
+
+
+
+
+
+# @api_view(['GET'])  # this implies the class that this is a api view 
+# def product_view(request,pk):  # we use this to display it using the url
+#     products=get_object_or_404(Product,pk=pk)
+#     serializing=ProductSerializer(products)  # we used many=True because we are passing a query set which are of multiple objects
+#     return Response(serializing.data)
+
+
+
+
+
+
+class OrderListAPIView(generics.ListAPIView):
+    queryset=Order.objects.prefetch_related('items__product')  
+    serializer_class=OrderSerializer
+
+
+
+
+
+
+
+
+# @api_view(['GET'])
+# def order_list(request):
+#     orders=Order.objects.prefetch_related(
+#         #'items',         we dont need items here because doing items__product already fetches the items fully and then the product
+#         'items__product'
+#         )  # here items refer to get orderitem for each order and items__product does refer to orderItem by items and get its product
+#     serializers=OrderSerializer(orders,many=True)
+#     return Response(serializers.data)
   
 
 
