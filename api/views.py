@@ -56,6 +56,17 @@ class OrderListAPIView(generics.ListAPIView):
     serializer_class=OrderSerializer
 
 
+# this shows the data of the specific user that was logged in the website and thier orders
+class UserOrderListAPIView(generics.ListAPIView):
+    queryset=Order.objects.prefetch_related('items__product')  
+    serializer_class=OrderSerializer
+
+    #over rising the queryset
+    def get_queryset(self):
+        qs=super().get_queryset()  # this updates the data dynamically
+        return qs.filter(user=self.request.user)
+
+
 
 
 
