@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
-
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 
 
 class ProductListAPIView(generics.ListAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
@@ -54,12 +54,19 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 class OrderListAPIView(generics.ListAPIView):
     queryset=Order.objects.prefetch_related('items__product')  
     serializer_class=OrderSerializer
+    permission_classes=[IsAdminUser]
+
+
+
+
+
 
 
 # this shows the data of the specific user that was logged in the website and thier orders
 class UserOrderListAPIView(generics.ListAPIView):
-    queryset=Order.objects.prefetch_related('items__product')  
+    queryset=Order.objects.prefetch_related('items__product')    # the double underscore indicates that it fetches both items and items.product we do this for faster fata retreival
     serializer_class=OrderSerializer
+    permission_classes=[IsAuthenticated]
 
     #over rising the queryset
     def get_queryset(self):
