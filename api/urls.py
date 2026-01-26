@@ -5,9 +5,9 @@ urlpatterns = [
     path('products/',views.ProductListAPIView.as_view()),
     path('products/<int:product_id>',views.ProductDetailAPIView.as_view()), # we can overide link name to this to refer to this instead of pk key defaultly done by the generic rest_framework
     path('orders/',views.OrderListAPIView.as_view()),
-    path('product/info',views.product_data),
+    path('product/info',views.ProductDataAPIView.as_view()),
     path('user-orders/',views.UserOrderListAPIView.as_view(),name='user-orders'),
-    
+
 
     
     

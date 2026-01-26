@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
-
+from rest_framework.views import APIView
 
 class ProductListAPIView(generics.ListAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
     queryset=Product.objects.all()
@@ -91,16 +91,26 @@ class UserOrderListAPIView(generics.ListAPIView):
   
 
 
-@api_view(['GET'])
 
-def product_data(request):
-    products=Product.objects.all()
-    serializers=ProductInfoSerializer({
-        'products':products,
-        'count':len(products),
-        'max_price':products.aggregate(max_price=Max('price'))['max_price']   #here aggregate will search the database directly for the command kept in the bracket instead of running a function to get the price and calculating the max price and then we use the ['max_price'] again because the aggregate function returns a dict so we extracted the max_price and display the answers
-        #the aggregate is also optimised for database operation in sql
-    })
-    return Response(serializers.data)
+class ProductDataAPIView(APIView):
+    def get(self,request):
+        products=Product.objects.all()
+        serializers=ProductInfoSerializer({
+            'products':products,
+            'count':len(products),
+            'max_price':products.aggregate(max_price=Max('price'))['max_price']
+        })
+        return Response(serializers.data)
+# @api_view(['GET'])
+
+# def product_data(request):
+#     products=Product.objects.all()
+#     serializers=ProductInfoSerializer({
+#         'products':products,
+#         'count':len(products),
+#         'max_price':products.aggregate(max_price=Max('price'))['max_price']   #here aggregate will search the database directly for the command kept in the bracket instead of running a function to get the price and calculating the max price and then we use the ['max_price'] again because the aggregate function returns a dict so we extracted the max_price and display the answers
+#         #the aggregate is also optimised for database operation in sql
+#     })
+#     return Response(serializers.data)
 
 
