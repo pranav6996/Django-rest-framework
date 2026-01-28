@@ -6,14 +6,29 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
+from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.views import APIView
 
-class ProductListAPIView(generics.ListAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
+class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
     queryset=Product.objects.all()
     serializer_class=ProductSerializer
 
+    def get_permission(self):
+        self.permission_classes=[AllowAny]
+        if self.request.method =='POST':
+            self.permission_classes=[IsAdminUser]
+        return super().get_permission()
 
+
+# the below class is not needed because it is only for creating an api view and not getting the api view so the above class solves it and let us do both get and post using the same apiview
+
+# class ProductCreateAPIView(generics.CreateAPIView):
+#     model=Product
+#     serializer_class=ProductSerializer
+
+#     def create(self,request,*args,**kwargs):  # this is a inbuilt method and wee are intercepting this to print the data in the middle 
+#         print(request.data)
+#         return super().create(request,*args,**kwargs)
 
 # @api_view(['GET'])  # this implies the class that this is a api view 
 # def product_list(request):  # we use this to display it using the url
@@ -68,7 +83,7 @@ class UserOrderListAPIView(generics.ListAPIView):
     serializer_class=OrderSerializer
     permission_classes=[IsAuthenticated]
 
-    #over rising the queryset
+    #over riding the queryset
     def get_queryset(self):
         qs=super().get_queryset()  # this updates the data dynamically
         return qs.filter(user=self.request.user)
