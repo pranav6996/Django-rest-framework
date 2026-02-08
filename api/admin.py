@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order,OrderItem
+from .models import Order,OrderItem,User
 # Register your models here.
 
 
@@ -14,6 +14,7 @@ class OrderAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(Order,OrderAdmin)
+admin.site.register(User)
 #this line integrates order table in the admin page and it will link OrderItem in it because we kept the inlines of it in the class
 
 

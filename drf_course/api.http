@@ -4,6 +4,7 @@ GET http://127.0.0.1:8000/products/ HTTP/1.1
 
 POST http://127.0.0.1:8000/products/ HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcwNTYxNzIwLCJpYXQiOjE3NzA1NjE0MjAsImp0aSI6IjEzNjc3ZTkwNzAxZTQ1ZjM4YmY2NjhlZmUzYjNhN2JkIiwidXNlcl9pZCI6IjQifQ.d7Jf3x1fptXxRcrDLS7P0bx3D4UdvCszXCkgjvsOFMY
 
 {
     "name": "New Product",
@@ -11,3 +12,7 @@ Content-Type: application/json
     "price": 9.99,
     "stock": 100
 }
+
+###
+GET http://127.0.0.1:8000/user-orders/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcwNTYyNDIyLCJpYXQiOjE3NzA1NjIxMjIsImp0aSI6IjZjOTYzMzdhYzMwYzRlMjFhMzdmNzg2MWVlYTEyMjZkIiwidXNlcl9pZCI6IjQifQ.-MjeBMye7ZWuLweqYMtPF4G53litqjzJvbZw-cbw-0g

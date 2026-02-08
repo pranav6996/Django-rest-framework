@@ -13,11 +13,11 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanc
     queryset=Product.objects.all()
     serializer_class=ProductSerializer
 
-    def get_permission(self):
+    def get_permissions(self):
         self.permission_classes=[AllowAny]
         if self.request.method =='POST':
             self.permission_classes=[IsAdminUser]
-        return super().get_permission()
+        return super().get_permissions()
 
 
 # the below class is not needed because it is only for creating an api view and not getting the api view so the above class solves it and let us do both get and post using the same apiview
