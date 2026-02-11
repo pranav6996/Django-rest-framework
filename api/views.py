@@ -43,12 +43,21 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanc
 
 
 
-class ProductDetailAPIView(generics.RetrieveAPIView):
+class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):#https://www.django-rest-framework.org/api-guide/generic-views/#retrievedestroyapiview  see in this website for refrence what more we cna keep beside generics. for more permissions and usages
     queryset=Product.objects.all()
     # instead of retrieving all the data like that with all() we can choose a certain field like Product.objects.filter(stock__gt=0)  # here gt indicates greater than
     # we cna also exclude a field like Product.objects.exclude(stock__gt=0) this only returns the products with stock 0
     serializer_class=ProductSerializer
-    lookup_url_kwarg='product_id'  # we overrided the primary key to this manually because it automatically used primary key to search so we changed it to check the things
+    lookup_url_kwarg='product_id'
+    # We did NOT change how DRF searches.
+    # DRF still searches using primary key (pk).
+    # We only told DRF to read the value from URL param named 'product_id' instead of 'pk'. 
+
+    def get_permissions(self):
+        self.permission_classes=[AllowAny]
+        if self.request.method in ['POST','PUT','PATCH','DELETE']:
+            self.permission_classes=[IsAdminUser]
+        return super().get_permissions()
 
 
 
