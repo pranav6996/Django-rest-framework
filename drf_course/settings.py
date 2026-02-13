@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'silk',
+    'drf_spectacular',
 
 ]
 
@@ -126,7 +127,13 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',  # placing first means highest priority
         'rest_framework.authentication.SessionAuthentication',
-    ]
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # defines our api and explains our structure
 }
 
-
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'E-commerce API',
+    'DESCRIPTION': 'this is about a small e-commerce api',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
