@@ -8,10 +8,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.views import APIView
+from .filters import ProductFilter
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
     queryset=Product.objects.all()
     serializer_class=ProductSerializer
+    filterset_class=ProductFilter
 
     def get_permissions(self):
         self.permission_classes=[AllowAny]

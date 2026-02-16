@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'silk',
     'drf_spectacular',
+    'django_filters',
 
 ]
 
@@ -129,6 +130,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # defines our api and explains our structure
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 SPECTACULAR_SETTINGS = {
