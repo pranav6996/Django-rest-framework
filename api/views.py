@@ -9,11 +9,17 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.views import APIView
 from .filters import ProductFilter
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
     queryset=Product.objects.all()
     serializer_class=ProductSerializer
     filterset_class=ProductFilter
+    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    # filter_backends=[filters.SearchFilter]
+    search_fields=['name','description']
+    ordering_fields=['name','price','stock','description']
 
     def get_permissions(self):
         self.permission_classes=[AllowAny]
