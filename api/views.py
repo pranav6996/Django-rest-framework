@@ -8,20 +8,27 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.views import APIView
-from .filters import ProductFilter
+from .filters import ProductFilter,InStockFilterBackend,InNameFilterBackend
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
-    queryset=Product.objects.all()
+    # queryset=Product.objects.all()
+    queryset=Product.objects.order_by('pk') # we use this because of pagination because if we didnt order the data properly it will yeild inconsistent results
     serializer_class=ProductSerializer
     filterset_class=ProductFilter
-    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends=[DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,InStockFilterBackend,InNameFilterBackend]
     # filter_backends=[filters.SearchFilter]
     search_fields=['name','description']
     ordering_fields=['name','price','stock','description']
+    pagination_class=PageNumberPagination
+    pagination_class.page_size=10
+    pagination_class.page_query_param='pagenum'
+    pagination_class.page_size_query_param='size' # this is used to change the page size dynamically by passing the query parameter in the url like ?size=5 and it will display 5 items per page instead of 10 items per page which is the default value we set for pagination class
+    pagination_class.max_page_size=5
 
-    def get_permissions(self):
+    def get_permissions(self): 
         self.permission_classes=[AllowAny]
         if self.request.method =='POST':
             self.permission_classes=[IsAdminUser]
