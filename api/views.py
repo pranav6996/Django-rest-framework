@@ -3,15 +3,16 @@ from django.db.models import Max
 from .serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer
 from .models import Product,Order,OrderItem
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,action
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.views import APIView
-from .filters import ProductFilter,InStockFilterBackend,InNameFilterBackend
+from .filters import ProductFilter,InStockFilterBackend,InNameFilterBackend,OrderFilter
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
+from rest_framework import viewsets
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
     # queryset=Product.objects.all()
@@ -89,34 +90,49 @@ class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):#https://www.d
 
 
 
-
-class OrderListAPIView(generics.ListAPIView):
-    queryset=Order.objects.prefetch_related('items__product')  
-    serializer_class=OrderSerializer
-    permission_classes=[IsAdminUser]
-
-
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+# class OrderListAPIView(generics.ListAPIView):
+#     queryset=Order.objects.prefetch_related('items__product')  
+#     serializer_class=OrderSerializer
+#     permission_classes=[IsAdminUser]
 
 
 
+# WE WILL USE VIEWSETS TO REPLACE THESE CLASSES
 
 
-# this shows the data of the specific user that was logged in the website and thier orders
-class UserOrderListAPIView(generics.ListAPIView):
+
+# # this shows the data of the specific user that was logged in the website and thier orders
+# class UserOrderListAPIView(generics.ListAPIView):
+#     queryset=Order.objects.prefetch_related('items__product')    # the double underscore indicates that it fetches both items and items.product we do this for faster fata retreival
+#     serializer_class=OrderSerializer
+#     permission_classes=[IsAuthenticated]
+
+#     #over riding the queryset
+#     def get_queryset(self):
+#         qs=super().get_queryset()  # this updates the data dynamically
+#         return qs.filter(user=self.request.user)
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+class OrderViewSet(viewsets.ModelViewSet):
     queryset=Order.objects.prefetch_related('items__product')    # the double underscore indicates that it fetches both items and items.product we do this for faster fata retreival
     serializer_class=OrderSerializer
     permission_classes=[IsAuthenticated]
+    filterset_class=OrderFilter
+    filter_backends=[DjangoFilterBackend]
 
-    #over riding the queryset
-    def get_queryset(self):
-        qs=super().get_queryset()  # this updates the data dynamically
-        return qs.filter(user=self.request.user)
-
-
-
-
-
-
+    def get_queryset(self):  #this ensures that the orders of a user is only visisble to them but the admin can see all the orders
+        qs=super().get_queryset()
+        if not self.request.user.is_staff:
+            qs=qs.filter(user=self.request.user)
+        return qs
+    # this is not used because we wrote the above function and its basically does the same thing
+    # @action(detail=False,methods=['get'],url_path='user-orders') # by using this we may get the required data we want similar to get_queryset but this will add in the url like orders/user_orders so it will add more functionality
+    # def user_orders(self,request):
+    #     orders=self.get_queryset().filter(user=request.user)
+    #     serializer=self.get_serializer(orders,many=True)
+    #     return Response(serializer.data)
 
 
 # @api_view(['GET'])
@@ -151,5 +167,3 @@ class ProductDataAPIView(APIView):
 #         #the aggregate is also optimised for database operation in sql
 #     })
 #     return Response(serializers.data)
-
-

@@ -40,6 +40,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         )
 
 class OrderSerializer(serializers.ModelSerializer):
+    order_id=serializers.UUIDField(read_only=True) # we are over riding this because we shouldnt initialise our own order id it should be generated automatically so we use this to remove the order_id field when posting the data
     items=OrderItemSerializer(many=True,read_only=True) # this is used to take the data in the OrderItemSerializer and display it inside the same function
     total_price=serializers.SerializerMethodField()  # then we should define a function with the name of the initialised variable with get_(name of the variable)
 

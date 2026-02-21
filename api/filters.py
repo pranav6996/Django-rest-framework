@@ -1,5 +1,5 @@
 import django_filters
-from .models import Product
+from .models import Product,Order
 from rest_framework import filters
 
 
@@ -30,3 +30,11 @@ class ProductFilter(django_filters.FilterSet):
             "price":["gt","lt","exact","range"]
         }
 
+class OrderFilter(django_filters.FilterSet):
+    crated_at=django_filters.DateFilter(field_name='created_at__date') # we use created_at__date here to extract the data from the time it was created at for easier filtration
+    class Meta:
+        model=Order
+        fields={
+            "status":["exact"],
+            "created_at":["lt","gt","exact"]
+        }
