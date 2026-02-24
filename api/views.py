@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.db.models import Max
-from .serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer
+from .serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer,OrderCreateSerializer
 from .models import Product,Order,OrderItem
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,action
@@ -121,6 +121,14 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes=[IsAuthenticated]
     filterset_class=OrderFilter
     filter_backends=[DjangoFilterBackend]
+
+    def get_create(self,serializer):
+        serializer.save(user=self.request.user) #
+
+    def get_serializer_class(self): 
+        if self.action=='create':  # we can check for if its a post request directly
+            return OrderCreateSerializer
+        return super().get_serializer_class()
 
     def get_queryset(self):  #this ensures that the orders of a user is only visisble to them but the admin can see all the orders
         qs=super().get_queryset()

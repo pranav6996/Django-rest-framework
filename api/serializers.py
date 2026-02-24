@@ -39,9 +39,42 @@ class OrderItemSerializer(serializers.ModelSerializer):
             'item_subtotal',
         )
 
+class OrderCreateSerializer(serializers.ModelSerializer):
+    class OrderItemCreateSerializer(serializers.ModelSerializer):
+        class Meta:
+            model=OrderItem
+            fields=(
+                'product','quantity'
+            )
+    order_id=serializers.UUIDField(read_only=True)
+    items=OrderItemCreateSerializer(many=True)
+
+    def create(self,validated_data):
+        orderitem_data=validated_data.pop('items') # this will pop the items key in the dict containing product and quantity and use it neatly to parse the data and post properly
+        order=Order.objects.create(**validated_data)
+
+        for item in orderitem_data:
+            OrderItem.objects.create(order=order,**item)
+        return order
+    # we did all this to overide the create function like the post fucntion provided for viewsets and then specified the specific data we had to use for nested data from orders and by adding all them together using the same order_id
+
+    class Meta:
+        model=Order
+        
+        fields=(
+            'order_id',
+            'user',
+            'status',
+            'items',
+            
+        )
+        extra_kwargs={
+            'user':{'read_only':True} # this is used to make the user field read only because we will automatically assign the user field in the create function using the request.user and we dont want the user to post the user id in the data because it can cause security issues and we want to assign it automatically based on the logged in user
+        }
+
 class OrderSerializer(serializers.ModelSerializer):
     order_id=serializers.UUIDField(read_only=True) # we are over riding this because we shouldnt initialise our own order id it should be generated automatically so we use this to remove the order_id field when posting the data
-    items=OrderItemSerializer(many=True,read_only=True) # this is used to take the data in the OrderItemSerializer and display it inside the same function
+    items=OrderItemSerializer(many=True,read_only=True) # this is used to take the data in the OrderItemSerializer and display it inside the same function ( we removed read_only=True here because we want to post the data)
     total_price=serializers.SerializerMethodField()  # then we should define a function with the name of the initialised variable with get_(name of the variable)
 
     def get_total_price(self,obj): # here obj refers to the model=Order so it takes the value of Orders
