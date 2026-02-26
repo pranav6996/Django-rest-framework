@@ -28,7 +28,7 @@ class Order(models.Model):
         CANCELLED='cancelled'
     
     order_id=models.TextField(primary_key=True,default=uuid.uuid4)
-    user=models.ForeignKey(User,on_delete=models.CASCADE)  # this translated into sql as user_id column
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='orders')  # this translated into sql as user_id column
     # this will delete all the data associated with the user
 
     created_at=models.DateTimeField(auto_now_add=True)

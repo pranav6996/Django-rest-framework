@@ -13,19 +13,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
     "stock": 100
 }
 
-###
-GET http://127.0.0.1:8000/orders/ HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxNjg4OTUyLCJpYXQiOjE3NzE2ODg2NTIsImp0aSI6ImI4MmRiNmQwZmY0YjRmMmFhMTZlNWM2ZjQxYTg5MTQwIiwidXNlcl9pZCI6IjIifQ.h8CMdXzaKrSByN4-hjuxpnrnB_YxuN4bCNRjtbcP4Oo
-
-
 
 ###
-POST http://127.0.0.1:8000/orders/ HTTP/1.1
+PUT http://127.0.0.1:8000/orders/f0d79eb7-007d-4888-b059-b10d71671154/ HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxOTUzNjU2LCJpYXQiOjE3NzE5NTMzNTYsImp0aSI6IjViNjdhYzNkNTJiNTRlOGFhMDM5ZGExMmU1YzljZDkyIiwidXNlcl9pZCI6IjIifQ.-y005ceksapggVkJd1DQW7u6vJeW008AUmg5hyuMu4o
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcyMTA2Mjg0LCJpYXQiOjE3NzIxMDU5ODQsImp0aSI6IjMxMTNjODliYzMzODQ3MWVhYmJkZDUzMDVjMTJjM2U3IiwidXNlcl9pZCI6IjIifQ.jr6aTssKUqsTSEkjrib3MzYqAAxlLoD6RON59z5B6BY
 
 {
-    "status": "pending",
+    "status": "completed",
     "items": [
         {
             "product": 2,
@@ -37,3 +32,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
         }
     ]
 }
+
+
+###
+GET http://127.0.0.1:8000/orders/f0d79eb7-007d-4888-b059-b10d71671154/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcyMTA2Mjg0LCJpYXQiOjE3NzIxMDU5ODQsImp0aSI6IjMxMTNjODliYzMzODQ3MWVhYmJkZDUzMDVjMTJjM2U3IiwidXNlcl9pZCI6IjIifQ.jr6aTssKUqsTSEkjrib3MzYqAAxlLoD6RON59z5B6BY
+
+
+
+###
+DELETE  http://127.0.0.1:8000/orders/f0d79eb7-007d-4888-b059-b10d71671154/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcyMTA2Mjg0LCJpYXQiOjE3NzIxMDU5ODQsImp0aSI6IjMxMTNjODliYzMzODQ3MWVhYmJkZDUzMDVjMTJjM2U3IiwidXNlcl9pZCI6IjIifQ.jr6aTssKUqsTSEkjrib3MzYqAAxlLoD6RON59z5B6BY

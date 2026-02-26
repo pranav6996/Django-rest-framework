@@ -1,8 +1,23 @@
+from django.db import transaction
 from rest_framework import serializers
-from .models import Product,Order,OrderItem
+from .models import Product,Order,OrderItem,User
 
 
 # a serializer is something that converts the queryset returned by python when fetching data from the backend and convert them into json to display them and do further operations on it
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        # fields=(
+        #     'username',
+        #     'email',
+        #     'is_staff'
+        # )
+        # fields='__all__'
+        #exclude=('password','user_permissions','date_joined') # exclude these fields and displays all like fields
+        fields=('password','user_permissions','date_joined','orders')
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model=Product
@@ -47,7 +62,20 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 'product','quantity'
             )
     order_id=serializers.UUIDField(read_only=True)
-    items=OrderItemCreateSerializer(many=True)
+    items=OrderItemCreateSerializer(many=True,required=False)
+
+    def update(self, instance, validated_data):
+        orderitem_data=validated_data.pop('items')
+        with transaction.atomic():  #basically a fallback approach in databases like it will execute fully or rollback
+            instance=super().update(instance,validated_data)
+
+            if orderitem_data is not None:
+                instance.items.all().delete()
+
+                for item in orderitem_data:
+                    OrderItem.objects.create(order=instance,**item) # instance is that order specifically we are referrring to and we are updating the data of order items in it
+        return instance
+
 
     def create(self,validated_data):
         orderitem_data=validated_data.pop('items') # this will pop the items key in the dict containing product and quantity and use it neatly to parse the data and post properly

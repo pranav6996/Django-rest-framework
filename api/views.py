@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.db.models import Max
-from .serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer,OrderCreateSerializer
-from .models import Product,Order,OrderItem
+from .serializers import ProductSerializer,OrderSerializer,OrderItemSerializer,ProductInfoSerializer,OrderCreateSerializer,UserSerializer
+from .models import Product,Order,OrderItem,User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,action
 from django.shortcuts import get_object_or_404
@@ -126,7 +126,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user) #
 
     def get_serializer_class(self): 
-        if self.action=='create':  # we can check for if its a post request directly
+        if self.action=='create' or self.action=='update':  # we can check for if its a post request directly
             return OrderCreateSerializer
         return super().get_serializer_class()
 
@@ -175,3 +175,8 @@ class ProductDataAPIView(APIView):
 #         #the aggregate is also optimised for database operation in sql
 #     })
 #     return Response(serializers.data)
+
+class UserListView(generics.ListAPIView):
+    queryset=User.objects.all()
+    serializer_class=UserSerializer
+    pagination_class=None
