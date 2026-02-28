@@ -5,6 +5,8 @@ from rest_framework_simplejwt.views import(
     TokenRefreshView,
 )
 from rest_framework.routers import DefaultRouter
+from django.contrib.auth import views as auth_views
+from django.urls import path
 
 urlpatterns = [
     path('products/',views.ProductListCreateAPIView.as_view()),
@@ -16,7 +18,8 @@ urlpatterns = [
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('users/',views.UserListView.as_view())
+    path('users/',views.UserListView.as_view()),
+    path('login/',auth_views.LoginView.as_view(template_name='login.html'),name='login'),
 ]
 
 router=DefaultRouter()

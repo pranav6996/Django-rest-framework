@@ -132,7 +132,16 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # defines our api and explains our structure
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
      'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-     'PAGE_SIZE':5
+     'PAGE_SIZE':5,
+       'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '1/minute',
+        'product': '3/minute',
+        'order': '3/day'
+    }
 }
 
 SPECTACULAR_SETTINGS = {
@@ -140,4 +149,12 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'this is about a small e-commerce api',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+}
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+    }
 }

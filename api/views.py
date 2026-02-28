@@ -14,7 +14,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie, vary_on_headers
+
+
 class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
+
+    throttle_scope='product'
     # queryset=Product.objects.all()
     queryset=Product.objects.order_by('pk') # we use this because of pagination because if we didnt order the data properly it will yeild inconsistent results
     serializer_class=ProductSerializer
@@ -28,6 +35,16 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanc
     pagination_class.page_query_param='pagenum'
     pagination_class.page_size_query_param='size' # this is used to change the page size dynamically by passing the query parameter in the url like ?size=5 and it will display 5 items per page instead of 10 items per page which is the default value we set for pagination class
     pagination_class.max_page_size=5
+
+    @method_decorator(cache_page(60 * 15,key_prefix='product_list'))
+    @method_decorator(vary_on_headers("Authorization")) # this is used to vary the cache based on the Authorization header
+    def list(self,request,*args,**kwargs):
+        return super().list(request,*args,**kwargs)
+    
+    def get_queryset(self):
+        import time
+        time.sleep(3)
+        return super().get_queryset()
 
     def get_permissions(self): 
         self.permission_classes=[AllowAny]
@@ -68,6 +85,10 @@ class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):#https://www.d
     # We did NOT change how DRF searches.
     # DRF still searches using primary key (pk).
     # We only told DRF to read the value from URL param named 'product_id' instead of 'pk'. 
+    @method_decorator(cache_page(60 * 15,key_prefix='product_list'))
+    @method_decorator(vary_on_headers("Authorization")) # this is used to vary the cache based on the Authorization header  #..... caching becomes user specific now
+    def list(self,request,*args,**kwargs):
+        return super().list(request,*args,**kwargs)
 
     def get_permissions(self):
         self.permission_classes=[AllowAny]
@@ -116,6 +137,8 @@ class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):#https://www.d
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 class OrderViewSet(viewsets.ModelViewSet):
+
+    throttle_scope='order'
     queryset=Order.objects.prefetch_related('items__product')    # the double underscore indicates that it fetches both items and items.product we do this for faster fata retreival
     serializer_class=OrderSerializer
     permission_classes=[IsAuthenticated]
