@@ -19,7 +19,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 
 
-class ProductListCreateAPIView(generics.ListCreateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
+class ProductListCreateAPIView(generics.RetrieveUpdateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
 
     throttle_scope='product'
     # queryset=Product.objects.all()

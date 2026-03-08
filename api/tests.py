@@ -1,34 +1,45 @@
-from django.test import TestCase
-from .models import User,Order
+from rest_framework.test import APITestCase
+from .models import User,Order,Product
 from django.urls import reverse
-from rest_framework import status
 
-# Create your tests here.
 
-class UserOrderTestCase(TestCase):
+
+class ProductAPITestCase(APITestCase):
     def setUp(self):
-        user1=User.objects.create_user(username='user1',password='pass123')
-        user2=User.objects.create_user(username='user2',password='pass123')
-        Order.objects.create(user=user1)
-        Order.objects.create(user=user1)
-        Order.objects.create(user=user2)
-        Order.objects.create(user=user2)
+        self.admin_user=User.objects.create_superuser(username="admin_test",password="pass123")
+        self.normal_user=User.objects.create_user(username="user_test",password="pass123")
+        self.product=Product.objects.create(
+            name="air fryer",
+            description="a cooking machine used to build bodies basically",
+            price=15.04,
+            stock=3,
 
-    def test_user_order_endpoint_retrieves_only_authenticated_user_orders(self):
-            user=User.objects.get(username='user1')
-            self.client.force_login(user)
-            response=self.client.get(reverse('user-orders'))
-
-            assert response.status_code == 200
-            orders=response.json()
-            self.assertTrue(all(order['user']==user.id for order in orders))  # this checks if the data we got is assocaited with that user data only and all the orders that were displayed as json is by the same user's orders or not
-
-    def test_user_order_list_unauthenticated(self):
-         response=self.client.get(reverse('user-orders'))
-         self.assertEqual(response.status_code,403)      
+        )
+        self.url=reverse('product_detail',kwargs={'product_id':self.product.pk})
 
 
+    # def test_product_detail(self):
+    #     response=self.client.get(self.url)
+    #     self.assertEqual(response.status_code,200)
+    #     self.assertEqual(response.data['name'],self.product.name)
 
+
+    # def test_unauthorized_access(self):
+    #     data={"name":"updated product"}
+    #     response=self.client.put(self.url,data)
+    #     self.assertEqual(response.status_code,401)
+
+
+    def test_authorization(self):
+        # self.client.login(username="user_test",password="pass123")
+        # response=self.client.delete(self.url)
+        # self.assertEqual(response.status_code,403)
+        # self.assertTrue(Product.objects.filter(pk=self.product.pk).exists())
+
+        self.client.login(username="admin_test",password="pass123")
+        response=self.client.delete(self.url)
+        self.assertEqual(response.status_code,204)
+        self.assertFalse(Product.objects.filter(pk=self.product.pk).exists())
 
 
 
