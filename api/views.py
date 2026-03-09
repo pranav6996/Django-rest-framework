@@ -18,6 +18,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 
+from .tasks import send_order_confirmation_email
+
 
 class ProductListCreateAPIView(generics.RetrieveUpdateAPIView):  # this is an advanced versin of serializer and changes it to fucntion to class and get the data
 
@@ -145,8 +147,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     filterset_class=OrderFilter
     filter_backends=[DjangoFilterBackend]
 
-    def get_create(self,serializer):
-        serializer.save(user=self.request.user) #
+
+    def perform_create(self,serializer): # this is used when we sent a post request and it is creating a order in the database and we are overriding it
+        order=serializer.save(user=self.request.user) #
+        send_order_confirmation_email.delay(order.order_id,self.request.user.email)
 
     def get_serializer_class(self): 
         if self.action=='create' or self.action=='update':  # we can check for if its a post request directly
